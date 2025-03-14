@@ -6,6 +6,7 @@ class scody_jobwarning extends CModule
 {
     var $VENDOR = 'scody';
     var $MODULE = 'jobwarning';
+    var $MODULE_ID = 'scody.jobwarning';
     var $MODULE_VERSION;
     var $MODULE_VERSION_DATE;
     var $MODULE_NAME;
@@ -15,8 +16,6 @@ class scody_jobwarning extends CModule
 
     function __construct()
     {
-        $this->MODULE_ID = $this->VENDOR . '.' . $this->MODULE;
-
         $arModuleVersion = [];
         include(__DIR__ . '/version.php');
 

@@ -62,8 +62,8 @@
 
         // Метод для активации наложения
         activate(type = 'start') {
-                this.isActive = true;
-                this.createFaviconWithOverlay(type);  // Создаем наложение
+            this.isActive = true;
+            this.createFaviconWithOverlay(type);  // Создаем наложение
         }
 
         // Метод для деактивации наложения
@@ -73,10 +73,12 @@
                 this.favicon.href = this.defaultFavicon;  // Восстанавливаем исходный favicon
             }
         }
+
     }
 
     // Экспортируем класс FaviconOverlay в глобальную область
     global.FaviconOverlay = FaviconOverlay;
+
 
 })(window);
 
@@ -84,30 +86,28 @@ const faviconoverlay = new FaviconOverlay({});
 
 window.addEventListener('load', function () {
     setTimeout(() => {
+        function checkActivate(timemanBlock) {
+            if (timemanBlock.classList.contains('timeman-start') || timemanBlock.classList.contains('timeman-completed')) {
+                faviconoverlay.deactivate();  // Деактивируем наложение
+            } else if (timemanBlock.classList.contains('timeman-paused')) {
+                faviconoverlay.activate('pause');  // Активируем наложение - режим пауза (timeman-block-active timeman-paused)
+            } else {
+                faviconoverlay.activate();  // Активируем наложение (timeman-block-active)
+            }
+        };
+
         const timemanBlock = document.querySelector('.timeman-block');
 
         if (timemanBlock) {
             // Первоначальная проверка наличия класса 'timeman-start' при загрузке страницы
-            if (timemanBlock.classList.contains('timeman-start')) {
-                faviconoverlay.deactivate();  // Деактивируем наложение
-            } else if (timemanBlock.classList.contains('timeman-paused')) {
-                faviconoverlay.activate('pause');  // Активируем наложение - режим пауза
-            } else {
-                faviconoverlay.activate();  // Активируем наложение
-            }
+            checkActivate(timemanBlock);
 
             // Создаем наблюдателя за изменениями в атрибутах элемента
             const observer = new MutationObserver(function (mutationsList) {
                 mutationsList.forEach(function (mutation) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                         // Проверяем наличие класса 'timeman-start' у контейнера
-                        if (timemanBlock.classList.contains('timeman-start')) {
-                            faviconoverlay.deactivate();  // Деактивируем наложение
-                        } else if (timemanBlock.classList.contains('timeman-paused')) {
-                            faviconoverlay.activate('pause');  // Активируем наложение - режим пауза
-                        } else {
-                            faviconoverlay.activate();  // Активируем наложение
-                        }
+                        checkActivate(timemanBlock);
                     }
                 });
             });
@@ -119,3 +119,4 @@ window.addEventListener('load', function () {
         }
     }, 100);  // Сразу после загрузки страницы
 });
+
