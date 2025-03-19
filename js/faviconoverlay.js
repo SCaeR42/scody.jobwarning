@@ -4,16 +4,18 @@
             // Инициализация параметров
             this.colorStart = options.colorStart || 'pink';  // Цвет накладываемого круга
             this.colorPause = options.colorPause || 'yellow';  // Цвет накладываемого круга
-            this.defaultFavicon = options.defaultFavicon || '/favicon.ico';  // Путь к исходному favicon
+            this.defaultFavicon = options.defaultFavicon || ''; // Путь к исходному favicon
             this.favicon = this.getFaviconElement();  // Получаем элемент favicon
             this.canvas = document.createElement('canvas');  // Canvas для рисования
             this.ctx = this.canvas.getContext('2d');  // Контекст для рисования на canvas
             this.isActive = false;  // Состояние активирован ли эффект наложения
+
+            this.setDefaultFavicon();
         }
 
         // Метод для получения или создания тега <link rel="icon">
         getFaviconElement() {
-            let favicon = document.querySelector('link[rel="icon"]');
+            let favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
 
             // Если тег <link rel="icon"> не найден, создаем его
             if (!favicon) {
@@ -21,9 +23,55 @@
                 favicon.rel = 'icon';
                 favicon.href = this.defaultFavicon;  // Устанавливаем путь к изображению по умолчанию
                 document.head.appendChild(favicon);  // Добавляем тег в <head>
+            } else {
+                const href = favicon.getAttribute('href');
+
+                // Проверяем, если href является base64 строкой или относительной/абсолютной ссылкой
+                if (href && (href.startsWith('data:image') || href.startsWith('http'))) {
+                    return favicon;
+                } else {
+                    favicon.href = this.defaultFavicon;  // Устанавливаем путь к изображению по умолчанию
+                }
             }
 
             return favicon;
+        }
+
+        setDefaultFavicon() {
+            if (this.defaultFavicon) {
+                return;
+            }
+
+            const favInRootPath = '/favicon.ico';
+
+            fetch(favInRootPath).then(response => {
+                window.console.log('response', response);
+
+                if (response.ok) {
+                    this.defaultFavicon = favInRootPath;
+                } else {
+                    this.defaultFavicon = this.createDefaultFavicon();
+                }
+            }).catch(error => {
+            });
+        }
+
+        createDefaultFavicon() {
+            // Создаем canvas для рисования
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Устанавливаем размер favicon (например, 16x16 пикселей)
+            const size = 32;
+            canvas.width = size;
+            canvas.height = size;
+
+            // Рисуем пустое изображение (прозрачный фон)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0)'; // Прозрачный фон
+            ctx.fillRect(0, 0, size, size);
+
+            // Преобразуем canvas в base64 строку для использования как favicon
+            return canvas.toDataURL('image/png');
         }
 
         // Метод для создания нового favicon с наложением
@@ -79,7 +127,6 @@
     // Экспортируем класс FaviconOverlay в глобальную область
     global.FaviconOverlay = FaviconOverlay;
 
-
 })(window);
 
 const faviconoverlay = new FaviconOverlay({});
@@ -119,4 +166,3 @@ window.addEventListener('load', function () {
         }
     }, 100);  // Сразу после загрузки страницы
 });
-

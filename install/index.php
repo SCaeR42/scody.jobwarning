@@ -31,20 +31,11 @@ class scody_jobwarning extends CModule
 
     function InstallDB($arParams = [])
     {
-        // RegisterModuleDependences('main', 'OnBuildGlobalMenu', $this->MODULE_ID, 'CScodyJobwarning', 'OnBuildGlobalMenu');
-
-        //новый стиль
-
-        // $eventManager->registerEventHandlerCompatible("main", "OnBuildGlobalMenu", $this->MODULE_ID, "\Scody\CScodyJobwarning", "onBuildGlobalMenuHandler");
-
-
         return true;
     }
 
     function UnInstallDB($arParams = [])
     {
-        // UnRegisterModuleDependences('main', 'OnBuildGlobalMenu', $this->MODULE_ID, 'CScodyJobwarning', 'OnBuildGlobalMenu');
-
         return true;
     }
 
